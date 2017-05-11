@@ -1,0 +1,74 @@
+@CHARSET "UTF-8";
+body 
+{ 
+	margin: 0px; 
+}
+#main
+{
+	width: 1400px;
+	height: 700px;
+	padding: 10px;
+}
+label
+{
+	display: block;
+}
+input, select
+{
+	margin-bottom: 5px;
+	width: 115px;
+}
+.col1
+{
+	float: left;
+}
+.col2
+{
+	float: right;
+}
+.clear
+{
+	clear: both;
+}
+#left
+{
+	width: 800px;
+	height: 100%;
+	float: left;
+	border: 1px solid black;
+}
+#right
+{
+	width: 400px;
+	height: 100%;
+	float: right;
+	border: 1px solid black;
+}
+#col1
+{
+	float: left;
+}
+#col2
+{
+	float: right;
+}
+.inset
+{
+	height: 270px;
+	width: 180px;
+	border: 1px solid black;
+}
+.inset input
+{
+	width: 30px;
+}
+.inset label
+{
+	display: inline-block;
+}
+#textlayout
+{
+	overflow-y: scroll;
+	font-size: 0.9em;
+	height: 105px;
+}

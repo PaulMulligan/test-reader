@@ -1,0 +1,26 @@
+{
+    "start": {
+        "text": "This is the starting file. Go to first entry. Go to second entry.",
+        "choices": [{
+            "value": "Go to first entry.",
+            "entry": "1"
+        },{
+            "value": "Go to second entry.",
+            "entry": "two"
+        }]
+    },
+    "1": {
+        "text": "This is the first entry",
+        "choices": [{
+            "value": "Go to second entry.",
+            "entry": "two"
+        }]
+    },
+    "two": {
+        "text": "This is the second entry",
+        "choices": [{
+            "value": "Go to first entry.",
+            "entry": "1"
+        }]
+    }
+}
