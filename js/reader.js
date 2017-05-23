@@ -29,11 +29,9 @@ $(document).ready(function() {
     };
     
     function openEntry(entry) {
-        $.getJSON("data/data.json", function(obj) {
-            var text = replacePointers(obj[entry]);
-            fillText(text);
-            addListenerToCode(obj);
-        });
+        var text = replacePointers(gameData[entry]);
+        fillText(text);
+        addListenerToCode();
     }
     
     function replacePointers(data) {
@@ -45,7 +43,7 @@ $(document).ready(function() {
         return editedText;
     };
     
-    function addListenerToCode(obj) {
+    function addListenerToCode() {
         $('code').click(function(event) {
             openEntry(event.target.dataset.entry);
         });

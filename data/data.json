@@ -1,4 +1,4 @@
-{
+var gameData = {
     "start": {
         "text": "This is the starting file. Go to first entry. Go to second entry.",
         "choices": [{
