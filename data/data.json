@@ -1,14 +1,22 @@
 var gameData = {
     "start": {
-        "text": "This is the starting file. Go to first entry. Go to second entry.",
+        "text": "This is the starting file. $ROOM1. $ROOM2. $ROOM3.",
         "choices": [{
-            "value": "Go to first entry.",
-            "text": "Go to first entry.",
-            "entry": "1"
+            "value": "$ROOM1",
+            "text": "Go to the room with a key",
+            "entry": "key"
         },{
-            "value": "Go to second entry.",
-            "text": "Go to second entry.",
+            "value": "$ROOM2",
+            "text": "Go to second entry",
             "entry": "two"
+        },{
+            "value": "$ROOM3",
+            "text": "Go through the locked door (requires a key)",
+            "entry": "locked",
+            "condition": {
+                "type": "item",
+                "item": "key"
+            }
         }]
     },
     "1": {
@@ -26,5 +34,45 @@ var gameData = {
             "text": "Go to first entry.",
             "entry": "1"
         }]
+    },
+    "key": {
+        "text": "This is an empty room. There is a $KEY on the floor. Go to start.",
+        "choices": [{
+            "value": "Go to start.",
+            "text": "Go to start.",
+            "entry": "start"
+        }],
+        "items": [{
+            "value": "$KEY",
+            "text": "key",
+            "item": "key"
+        }]
+    },
+    "locked": {
+        "text": "This is an empty room that was previously locked. There is a $SWORD here. Go to start.",
+        "choices": [{
+            "value": "Go to start.",
+            "text": "Go to start.",
+            "entry": "start"
+        }],
+        "items": [{
+            "value": "$SWORD",
+            "text": "sword",
+            "item": "magicsword"
+        }]
     }
-}
+};
+var itemData = {
+    "key": {
+        "name": "Small key",
+        "description": "A small key"
+    },
+    "magicsword": {
+        "name": "Magic Sword (COM+1)",
+        "description": "A glowing sword that provides Combat +1",
+        "bonus": {
+            "stat": "bonuscombat",
+            "modifier": 1
+        }
+    }
+};

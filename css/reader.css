@@ -44,15 +44,20 @@ input, select
 	float: right;
 	border: 1px solid black;
 }
-code
+code, item
 {
 	color: #0000EE;
 	text-decoration: underline;
 }
-code:hover
+code:hover, item:hover
 {
 	text-decoration: none;
 	cursor: pointer;
+}
+item.got, locked {
+	color: darkgrey;
+	text-decoration: none;
+	cursor: arrow;
 }
 #col1
 {

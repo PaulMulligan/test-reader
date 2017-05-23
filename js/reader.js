@@ -22,6 +22,27 @@
 $(document).ready(function() {
     console.log('Starting code');
     
+    var player = {
+        firstname: "Hero",
+        race: "Human",
+        combat: 4,
+        survival: 4,
+        magic: 4,
+        charm: 4,
+        dexterity: 4,
+        bonuscombat: 0,
+        bonussurvival: 0,
+        bonusmagic: 0,
+        bonuscharm: 0,
+        bonusdexterity: 0,
+        stamina: 20,
+        job: "None",
+        defence: 0,
+        bonusdefence: 0,
+        inventory: [],
+        money: 0
+    };
+    
     function fillText(text) {
         $("#textlayout").empty();
         $("#textlayout").append(text + "<br/>");
@@ -29,23 +50,98 @@ $(document).ready(function() {
     };
     
     function openEntry(entry) {
-        var text = replacePointers(gameData[entry]);
+        var data = gameData[entry];
+        var text = replacePointers(data);
+        text = replaceItems(data, text);
         fillText(text);
-        addListenerToCode();
-    }
+        addChoiceListenerToCode();
+        addItemListenerToCode();
+    };
+    
+    function getItem(target) {
+        var jtarget = $(target);
+        if (!jtarget.hasClass('got')) {
+            player.inventory.push(target.dataset.item);
+            jtarget.addClass('got');
+            refreshInventory();
+            refreshStats();
+        }
+    };
+    
+    function refreshInventory() {
+        $("#inventory").empty();
+        player.bonuscombat = 0;
+        player.bonussurvival = 0;
+        player.bonusmagic = 0;
+        player.bonuscharm = 0;
+        player.bonusdexterity = 0;
+        for (var i = 0; i < player.inventory.length; i++) {
+            var itemKey = player.inventory[i];
+            var item = itemData[itemKey];
+            if (item) {
+                $("#inventory").append('<div title="' + item.description + '">' + item.name + '</div>');
+                if (item.bonus) {
+                    player[item.bonus.stat] += item.bonus.modifier;
+                }
+            }
+        }
+    };
+    
+    function refreshStats() {
+        $("#combat").val(player.combat + player.bonuscombat);
+        $("#survival").val(player.survival + player.bonussurvival);
+        $("#magic").val(player.magic + player.bonusmagic);
+        $("#charm").val(player.charm + player.bonuscharm);
+        $("#dexterity").val(player.dexterity + player.bonusdexterity);
+    };
     
     function replacePointers(data) {
         var editedText = data.text;
         for (var i = 0; i < data.choices.length; i++) {
             var choice = data.choices[i];
-            editedText = editedText.replace(choice.value, '<code data-entry="' + choice.entry +'">' + choice.text + '</code>');
+            var valid = false;
+            if (choice.condition) {
+                if (choice.condition.type == "item") {
+                    for (var j = 0; j < player.inventory.length; j++) {
+                        var item = player.inventory[j];
+                        if (item == choice.condition.item) {
+                            valid = true;
+                        }
+                    }
+                }
+            } else {
+                valid = true;
+            }
+            
+            if (valid) {
+                editedText = editedText.replace(choice.value, '<code data-entry="' + choice.entry +'">' + choice.text + '</code>');
+            } else {
+                editedText = editedText.replace(choice.value, '<locked data-entry="' + choice.entry +'">' + choice.text + '</locked>');
+            }
+            
         }
         return editedText;
     };
     
-    function addListenerToCode() {
+    function replaceItems(data, editedText) {
+        if (data.items) {
+            for (var i = 0; i < data.items.length; i++) {
+                var item = data.items[i];
+                editedText = editedText.replace(item.value, '<item data-item="' + item.item +'">' + item.text + '</item>');
+            }
+        }
+        return editedText;
+    };
+    
+    function addChoiceListenerToCode() {
         $('code').click(function(event) {
             openEntry(event.target.dataset.entry);
+        });
+    };
+    
+    function addItemListenerToCode() {
+        $('item').click(function(event) {
+            getItem(event.target);
         });
     };
     
