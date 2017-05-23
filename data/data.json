@@ -3,23 +3,27 @@
         "text": "This is the starting file. Go to first entry. Go to second entry.",
         "choices": [{
             "value": "Go to first entry.",
+            "text": "Go to first entry.",
             "entry": "1"
         },{
             "value": "Go to second entry.",
+            "text": "Go to second entry.",
             "entry": "two"
         }]
     },
     "1": {
-        "text": "This is the first entry",
+        "text": "This is the first entry. Go to second entry.",
         "choices": [{
             "value": "Go to second entry.",
+            "text": "Go to second entry.",
             "entry": "two"
         }]
     },
     "two": {
-        "text": "This is the second entry",
+        "text": "This is the second entry. $FIRST",
         "choices": [{
-            "value": "Go to first entry.",
+            "value": "$FIRST",
+            "text": "Go to first entry.",
             "entry": "1"
         }]
     }

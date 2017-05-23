@@ -20,14 +20,36 @@
 //Average hard: Up to difficulty 12
 
 $(document).ready(function() {
-    $.getJSON("../data/data.json", function(obj) {
-        console.log(obj);
-        fillText(data.start.text);
-    });
+    console.log('Starting code');
     
     function fillText(text) {
         $("#textlayout").empty();
         $("#textlayout").append(text + "<br/>");
         $("#textlayout").scrollTop($("#textlayout")[0].scrollHeight);
     };
+    
+    function openEntry(entry) {
+        $.getJSON("data/data.json", function(obj) {
+            var text = replacePointers(obj[entry]);
+            fillText(text);
+            addListenerToCode(obj);
+        });
+    }
+    
+    function replacePointers(data) {
+        var editedText = data.text;
+        for (var i = 0; i < data.choices.length; i++) {
+            var choice = data.choices[i];
+            editedText = editedText.replace(choice.value, '<code data-entry="' + choice.entry +'">' + choice.text + '</code>');
+        }
+        return editedText;
+    };
+    
+    function addListenerToCode(obj) {
+        $('code').click(function(event) {
+            openEntry(event.target.dataset.entry);
+        });
+    };
+    
+    openEntry("start");
 });
