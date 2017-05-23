@@ -7,8 +7,8 @@ var gameData = {
             "entry": "key"
         },{
             "value": "$ROOM2",
-            "text": "Go to second entry",
-            "entry": "two"
+            "text": "Go to the random room",
+            "entry": "random"
         },{
             "value": "$ROOM3",
             "text": "Go through the locked door (requires a key)",
@@ -17,6 +17,14 @@ var gameData = {
                 "type": "item",
                 "item": "key"
             }
+        }]
+    },
+    "random": {
+        "text": "This room is random and twisty. It will send you to a $RANDOM.",
+        "choices": [{
+            "value": "$RANDOM",
+            "text": "random room",
+            "random": ["key", "start"]
         }]
     },
     "1": {

@@ -114,9 +114,15 @@ $(document).ready(function() {
             }
             
             if (valid) {
-                editedText = editedText.replace(choice.value, '<code data-entry="' + choice.entry +'">' + choice.text + '</code>');
+                var entry;
+                if (choice.entry) {
+                    entry = choice.entry;
+                } else if (choice.random) {
+                    entry = getRandomFromArray(choice.random);
+                }
+                editedText = editedText.replace(choice.value, '<code data-entry="' + entry +'">' + choice.text + '</code>');
             } else {
-                editedText = editedText.replace(choice.value, '<locked data-entry="' + choice.entry +'">' + choice.text + '</locked>');
+                editedText = editedText.replace(choice.value, '<locked >' + choice.text + '</locked>');
             }
             
         }
@@ -143,6 +149,10 @@ $(document).ready(function() {
         $('item').click(function(event) {
             getItem(event.target);
         });
+    };
+    
+    function getRandomFromArray(array) {
+        return array[Math.floor(Math.random()*array.length)];
     };
     
     openEntry("start");
