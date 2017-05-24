@@ -51,11 +51,26 @@ $(document).ready(function() {
     
     function openEntry(entry) {
         var data = gameData[entry];
+        applyEffects(data);
         var text = replacePointers(data);
         text = replaceItems(data, text);
+        text = replaceTests(data, text);
         fillText(text);
         addChoiceListenerToCode();
         addItemListenerToCode();
+        addTestListenerToCode();
+        
+        refreshInventory();
+        refreshStats();
+    };
+    
+    function applyEffects(entry) {
+        if (entry.effects) {
+            for (var i = 0; i < entry.effects.length; i++) {
+                var effect = entry.effects[i];
+                player[effect.stat] += effect.modifier;
+            }
+        }
     };
     
     function getItem(target) {
@@ -65,6 +80,26 @@ $(document).ready(function() {
             jtarget.addClass('got');
             refreshInventory();
             refreshStats();
+        }
+    };
+    
+    function testStat(target) {
+        if (!$(target).hasClass('got')) {
+            $(target).addClass('got');
+            var stat = player[target.dataset.stat];
+            if (player['bonus' + target.dataset.stat]) {
+                stat += player['bonus' + target.dataset.stat];
+            }
+            var roll = roll12();
+            var newtext = 'You rolled ' + roll + '+' + stat + '=' + (roll+stat) + ' against ' + target.dataset.goal;
+            if (roll + stat >= target.dataset.goal) {
+                player[target.dataset.successstat] += parseInt(target.dataset.successmodifier);
+                refreshStats();
+                newtext += '\n ' + target.dataset.successtext + '\n';
+            } else {
+                newtext += '\n ' + target.dataset.failuretext + '\n';
+            }
+            $(target).after(newtext);
         }
     };
     
@@ -93,6 +128,12 @@ $(document).ready(function() {
         $("#magic").val(player.magic + player.bonusmagic);
         $("#charm").val(player.charm + player.bonuscharm);
         $("#dexterity").val(player.dexterity + player.bonusdexterity);
+        
+        $("#money").val(player.money);
+        $("#stamina").val(player.stamina);
+        $("#job").val(player.job);
+        $("#defence").val(player.defence);
+        $("#race").val(player.race);
     };
     
     function replacePointers(data) {
@@ -139,6 +180,23 @@ $(document).ready(function() {
         return editedText;
     };
     
+    function replaceTests(data, editedText) {
+        if (data.tests) {
+            for (var i = 0; i < data.tests.length; i++) {
+                var test = data.tests[i];
+                editedText = editedText.replace(test.value, '<test data-goal="' + test.goal + '" data-stat="' + test.stat + 
+                        '" data-effect="' + test.success.effect + '" data-successtext="' + test.success.text + 
+                        '" data-successstat="' + test.success.stat + '" data-successmodifier="' + test.success.modifier + 
+                        '" data-failuretext="' + test.failure.text +'">' + test.text + '</item>');
+            }
+        }
+        return editedText;
+    };
+    
+    function roll12() {
+        return (Math.floor(Math.random()*6) + Math.floor(Math.random()*6)); 
+    };
+    
     function addChoiceListenerToCode() {
         $('code').click(function(event) {
             openEntry(event.target.dataset.entry);
@@ -148,6 +206,12 @@ $(document).ready(function() {
     function addItemListenerToCode() {
         $('item').click(function(event) {
             getItem(event.target);
+        });
+    };
+    
+    function addTestListenerToCode() {
+        $('test').click(function(event) {
+            testStat(event.target);
         });
     };
     

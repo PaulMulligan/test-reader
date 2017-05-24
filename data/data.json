@@ -1,6 +1,6 @@
 var gameData = {
     "start": {
-        "text": "This is the starting file. $ROOM1. $ROOM2. $ROOM3.",
+        "text": "This is the starting file. $ROOM1. $ROOM2. $ROOM3. $ROOM4. $ROOM5",
         "choices": [{
             "value": "$ROOM1",
             "text": "Go to the room with a key",
@@ -17,6 +17,14 @@ var gameData = {
                 "type": "item",
                 "item": "key"
             }
+        },{
+            "value": "$ROOM4",
+            "text": "Go to the lever room",
+            "entry": "gamble"
+        },{
+            "value": "$ROOM5",
+            "text": "Go to the cash room",
+            "entry": "cash"
         }]
     },
     "random": {
@@ -25,6 +33,42 @@ var gameData = {
             "value": "$RANDOM",
             "text": "random room",
             "random": ["key", "start"]
+        }]
+    },
+    "cash": {
+        "text": "This room makes you feel wealthier. Go to start.",
+        "choices": [{
+            "value": "Go to start.",
+            "text": "Go to start.",
+            "entry": "start"
+        }],
+        "effects": [{
+            "effect": "stat-change",
+            "stat": "money",
+            "modifier": 1
+        }]
+    },
+    "gamble": {
+        "text": "There is a magic lever here. $PULL. Go to start.",
+        "choices": [{
+            "value": "Go to start.",
+            "text": "Go to start.",
+            "entry": "start"
+        }],
+        "tests": [{
+            "value": "$PULL",
+            "text": "Pull the lever (MAGIC vs 10)",
+            "stat": "magic",
+            "goal": 10,
+            "success": {
+                "text": "You manage to pull the lever down, and ten gold falls from the ceiling.",
+                "effect": "stat-change",
+                "stat": "money",
+                "modifier": 10
+            },
+            "failure": {
+                "text": "Some mysterious force resists you when you try to pull the lever.",
+            }
         }]
     },
     "1": {
