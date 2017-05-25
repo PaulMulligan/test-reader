@@ -48,6 +48,23 @@ var gameData = {
             "modifier": 1
         }]
     },
+    "shop": {
+        "text": "This room has an automatic vending machine where you can buy and sell things. Go to start.",
+        "choices": [{
+            "value": "Go to start.",
+            "text": "Go to start.",
+            "entry": "start"
+        }],
+        "shop": [{
+            "item": "candy",
+            "buysFor": 1,
+            "sellsFor": 5
+        },{
+            "item": "magicsword",
+            "buysFor": 50,
+            "sellsFor": null
+        }]
+    },
     "gamble": {
         "text": "There is a magic lever here. $PULL. Go to start.",
         "choices": [{
@@ -126,5 +143,9 @@ var itemData = {
             "stat": "bonuscombat",
             "modifier": 1
         }
+    },
+    "candy": {
+        "name": "Candy",
+        "description": "A piece of generic candy"
     }
 };
