@@ -1,6 +1,6 @@
 var gameData = {
     "start": {
-        "text": "This is the starting file. $ROOM1. $ROOM2. $ROOM3. $ROOM4. $ROOM5",
+        "text": "This is the starting file. $ROOM1. $ROOM2. $ROOM3. $ROOM4. $ROOM5. $ROOM6",
         "choices": [{
             "value": "$ROOM1",
             "text": "Go to the room with a key",
@@ -25,6 +25,10 @@ var gameData = {
             "value": "$ROOM5",
             "text": "Go to the cash room",
             "entry": "cash"
+        },{
+            "value": "$ROOM6",
+            "text": "Go to the shop room",
+            "entry": "shop"
         }]
     },
     "random": {

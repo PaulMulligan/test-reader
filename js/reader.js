@@ -55,10 +55,12 @@ $(document).ready(function() {
         var text = replacePointers(data);
         text = replaceItems(data, text);
         text = replaceTests(data, text);
+        text = appendCapitalism(data, text);
         fillText(text);
         addChoiceListenerToCode();
         addItemListenerToCode();
         addTestListenerToCode();
+        addListenersToStore()
         
         refreshInventory();
         refreshStats();
@@ -101,6 +103,14 @@ $(document).ready(function() {
             }
             $(target).after(newtext);
         }
+    };
+    
+    function buy(target) {
+        
+    };
+    
+    function sell(target) {
+        
     };
     
     function refreshInventory() {
@@ -193,6 +203,20 @@ $(document).ready(function() {
         return editedText;
     };
     
+    function appendCapitalism(data, editedText) {
+        if (data.shop) {
+            var html = "<table><tr><th>Item</th><th>Buy</th><th>Sell</th></tr>";
+            for (var i = 0; i < data.shop.length; i++) {
+                var shopitem = data.shop[i];
+                var item = itemData[shopitem.item];
+                html += '<tr data-item="' + shopitem.item + '"><td>' + item.name + '</td><td data-type="buy">' + shopitem.sellsFor + '</td><td data-type="sell">' + shopitem.buysFor + '</td></tr>'
+            }
+            html += '</table>';
+            editedText += html;
+        }
+        return editedText;
+    };
+    
     function roll12() {
         return (Math.floor(Math.random()*6) + Math.floor(Math.random()*6)); 
     };
@@ -213,6 +237,28 @@ $(document).ready(function() {
         $('test').click(function(event) {
             testStat(event.target);
         });
+    };
+    
+    function addListenersToStore() {
+        $('td').each(function(index, object) {
+            if (object.dataset.type == "buy") {
+                object.click(function(event) {
+                    buy(event.target);
+                });
+            } else if (object.dataset.type == "sell") {
+                object.click(function(event) {
+                    sell(event.target);
+                });
+            }
+        });
+    };
+    
+    function blockShopItems() {
+        if (object.dataset.type == "buy") {
+            //Check object price and add got class if you can't afford it
+        } else if (object.dataset.type == "sell") {
+            //Check object type and add got class if you don't have that
+        }
     };
     
     function getRandomFromArray(array) {
