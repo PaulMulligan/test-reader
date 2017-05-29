@@ -6,12 +6,15 @@ body
 #main
 {
 	width: 1400px;
-	height: 700px;
+	height: 100%;
 	padding: 10px;
+	background-color: #d6f5d6;
 }
 label
 {
 	display: block;
+	margin-top: 4px;
+	font-style: italic;
 }
 input, select
 {
@@ -32,32 +35,39 @@ input, select
 }
 #left
 {
-	width: 800px;
-	height: 100%;
+	width: 950px;
+	height: 620px;
 	float: left;
 	border: 1px solid black;
+	background-color: white;
 }
 #right
 {
 	width: 400px;
-	height: 100%;
+	height: 600px;
 	float: right;
 	border: 1px solid black;
+	padding: 10px;
+	background-color: lightgrey;
 }
-code, item, test
+code, item, test, td, combat
 {
 	color: #0000EE;
 	text-decoration: underline;
+	font-family: inherit;
+	font-size: inherit;
 }
-code:hover, item:hover, test:hover
+code:hover, item:hover, test:hover, td:hover, combat:hover
 {
 	text-decoration: none;
 	cursor: pointer;
 }
-.got, locked {
+code.got, item.got, test.got, td.got, combat.got, locked {
 	color: darkgrey;
 	text-decoration: none;
 	cursor: text;
+	font-family: inherit;
+	font-size: inherit;
 }
 #col1
 {
@@ -70,8 +80,12 @@ code:hover, item:hover, test:hover
 .inset
 {
 	height: 270px;
-	width: 180px;
-	border: 1px solid black;
+	width: 150px;
+	border: 1px solid darkgrey;
+	padding: 10px;
+	/* margin: 5px; */
+	overflow-y: scroll;
+	background-color: white;
 }
 .inset input
 {
@@ -80,10 +94,19 @@ code:hover, item:hover, test:hover
 .inset label
 {
 	display: inline-block;
+	width: 90px;
 }
 #textlayout
 {
 	overflow-y: scroll;
-	font-size: 0.9em;
-	height: 105px;
+	/* font-size: 0.9em; */
+	height: 600px;
+	padding: 10px;
+	font-size: 1em;
+	font-family: sans-serif;
+}
+
+#blessings
+{
+	height: 95px;
 }

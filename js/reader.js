@@ -40,39 +40,97 @@ $(document).ready(function() {
         defence: 0,
         bonusdefence: 0,
         inventory: [],
-        money: 0
+        money: 0,
+        effects: []
+    };
+    
+    function hasObject(object) {
+    	var has = false;
+    	for (var i = 0; i < player.inventory.length; i++) {
+    		if (object === player.inventory[i]) {
+    			has = true;
+    		}
+    	}
+    	return has;
+    };
+    
+    function dropItem(object) {
+    	var index = false;
+    	for (var i = 0; i < player.inventory.length; i++) {
+    		if (object === player.inventory[i]) {
+    			index = i;
+    		}
+    	}
+    	player.inventory.splice(index, 1);
+    };
+    
+    function clearText() {
+    	$("#textlayout").empty();
     };
     
     function fillText(text) {
-        $("#textlayout").empty();
-        $("#textlayout").append(text + "<br/>");
+        $("#textlayout").append("<p>" + text + "</p>");
         $("#textlayout").scrollTop($("#textlayout")[0].scrollHeight);
     };
     
     function openEntry(entry) {
+        clearText();
         var data = gameData[entry];
+        decrementEffects();
         applyEffects(data);
-        var text = replacePointers(data);
-        text = replaceItems(data, text);
-        text = replaceTests(data, text);
-        text = appendCapitalism(data, text);
-        fillText(text);
+        
+        for (var i = 0; i < gameData[entry].text.length; i++) {
+        	var text = gameData[entry].text[i];
+        	text = replacePointers(data, text);
+            text = replaceItems(data, text);
+            text = replaceTests(data, text);
+            text = appendCapitalism(data, text);
+            text = appendCombat(data, text);
+            fillText(text);
+        }
+        
         addChoiceListenerToCode();
         addItemListenerToCode();
         addTestListenerToCode();
-        addListenersToStore()
+        addListenersToStore();
+        addCombatListenerToCode();
         
         refreshInventory();
         refreshStats();
+    };
+    
+    function decrementEffects() {
+    	var remainingEffects = [];
+    	for (var i = 0; i < player.effects.length; i++) {
+    		var effect = player.effects[i];
+    		effect.delay = effect.delay-1;
+    		if (effect.delay <= 0) {
+    			triggerEffect(effect);
+    		} else {
+    			remainingEffects.push(effect);
+    		}
+    	}
+    	player.effects = remainingEffects;
     };
     
     function applyEffects(entry) {
         if (entry.effects) {
             for (var i = 0; i < entry.effects.length; i++) {
                 var effect = entry.effects[i];
-                player[effect.stat] += effect.modifier;
+                if (effect.delay && effect.delay > 0) {
+                	player.effects.push(effect);
+                } else {
+                	triggerEffect(effect);
+                }
             }
         }
+    };
+    
+    function triggerEffect(effect) {
+    	if (effect.text) {
+    		fillText(effect.text);
+    	}
+    	player[effect.stat] += effect.modifier;
     };
     
     function getItem(target) {
@@ -83,6 +141,30 @@ $(document).ready(function() {
             refreshInventory();
             refreshStats();
         }
+    };
+    
+    function runCombat(target) {
+    	if (!$(target).hasClass("got")) {
+    		var data = target.parentElement.firstChild.data.split(":");
+        	var skill = data[1];
+        	var stamina = data[3];
+        	var enemyRoll = roll12() + parseInt(skill);
+        	var playerRoll = roll12() + player.combat + player.bonuscombat;
+        	if (enemyRoll > playerRoll) {
+        		player.stamina -= (enemyRoll-playerRoll);
+        	} else if (enemyRoll < playerRoll) {
+        		stamina -= (playerRoll-enemyRoll);
+        		target.parentElement.firstChild.data = data[0] + ":" + data[1] + ":" +  data[2] + ":" + stamina + " ";
+        	}
+        	refreshStats();
+        	if (player.stamina <= 0) {
+        		$(target).addClass("got");
+        		var newText = 
+        		editedText = editedText.replace(choice.value, '<code data-entry="' + entry +'">' + choice.text + '</code>');
+        	} else if (stamina <= 0) {
+        		$(target).addClass("got");
+        	}
+    	}
     };
     
     function testStat(target) {
@@ -106,11 +188,37 @@ $(document).ready(function() {
     };
     
     function buy(target) {
-        
+        if (!$(target).hasClass('got')) {
+        	var itemName = target.parentElement.dataset.item;
+        	var item = itemData[itemName];
+        	if (item) {
+        		player.inventory.push(itemName);
+        		player.money -= parseInt(target.innerText);
+        		refreshInventory();
+                refreshStats();
+                refreshShop();
+        	}
+        }
+    };
+    
+    function refreshShop() {
+    	 $('td').each(function(index, object) {
+         	blockShopItems(object);
+    	 });
     };
     
     function sell(target) {
-        
+    	if (!$(target).hasClass('got')) {
+        	var itemName = target.parentElement.dataset.item;
+        	var item = itemData[itemName];
+        	if (item) {
+        		dropItem(itemName);
+        		player.money += parseInt(target.innerText);
+        		refreshInventory();
+                refreshStats();
+                refreshShop();
+        	}
+        }
     };
     
     function refreshInventory() {
@@ -146,8 +254,7 @@ $(document).ready(function() {
         $("#race").val(player.race);
     };
     
-    function replacePointers(data) {
-        var editedText = data.text;
+    function replacePointers(data, editedText) {
         for (var i = 0; i < data.choices.length; i++) {
             var choice = data.choices[i];
             var valid = false;
@@ -209,9 +316,17 @@ $(document).ready(function() {
             for (var i = 0; i < data.shop.length; i++) {
                 var shopitem = data.shop[i];
                 var item = itemData[shopitem.item];
-                html += '<tr data-item="' + shopitem.item + '"><td>' + item.name + '</td><td data-type="buy">' + shopitem.sellsFor + '</td><td data-type="sell">' + shopitem.buysFor + '</td></tr>'
+                html += '<tr data-item="' + shopitem.item + '"><td>' + item.name + '</td><td data-shoptype="buy">' + shopitem.sellsFor + '</td><td data-shoptype="sell">' + shopitem.buysFor + '</td></tr>'
             }
             html += '</table>';
+            editedText += html;
+        }
+        return editedText;
+    };
+    
+    function appendCombat(data, editedText) {
+        if (data.combat) {
+            var html = "<p>" + data.combat.name + " Skill :" + data.combat.skill + ": Stamina :" + data.combat.stamina + " <combat data-successEntry=" + data.combat.win.entry + ">FIGHT</combat></p>";
             editedText += html;
         }
         return editedText;
@@ -241,23 +356,44 @@ $(document).ready(function() {
     
     function addListenersToStore() {
         $('td').each(function(index, object) {
-            if (object.dataset.type == "buy") {
-                object.click(function(event) {
+        	blockShopItems(object);
+            if (object.dataset.shoptype == "buy") {
+                $(object).click(function(event) {
                     buy(event.target);
                 });
-            } else if (object.dataset.type == "sell") {
-                object.click(function(event) {
+            } else if (object.dataset.shoptype == "sell") {
+                $(object).click(function(event) {
                     sell(event.target);
                 });
             }
         });
     };
+
+    function addCombatListenerToCode() {
+        $('combat').click(function(event) {
+            runCombat(event.target);
+        });
+    };
     
-    function blockShopItems() {
-        if (object.dataset.type == "buy") {
-            //Check object price and add got class if you can't afford it
-        } else if (object.dataset.type == "sell") {
-            //Check object type and add got class if you don't have that
+    function blockShopItems(object) {
+        if (object.dataset.shoptype == "buy") {
+        	if (object.innerText === "null") {
+        		$(object).addClass('got');
+        	} else if (player.money >= object.innerText) {
+            	$(object).removeClass('got');
+            } else {
+            	$(object).addClass('got');
+            }
+        } else if (object.dataset.shoptype == "sell") {
+        	if (object.innerText === "null") {
+        		$(object).addClass('got');
+        	} else if (hasObject(object.parentElement.dataset.item)) {
+        		$(object).removeClass('got');
+        	} else {
+        		$(object).addClass('got');
+        	}
+        } else {
+        	$(object).addClass('got');
         }
     };
     
